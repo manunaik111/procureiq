@@ -25,7 +25,7 @@ pandas==2.2.3
 numpy==2.2.4
 
 # Forecasting
-prophet==1.1.6
+prophet==1.1.5
 
 # Document generation
 fpdf2==2.8.2
