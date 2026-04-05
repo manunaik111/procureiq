@@ -1,4 +1,4 @@
-import requests
+import resend
 from orchestrator.state import ProcurementState
 from datetime import datetime
 from dotenv import load_dotenv
@@ -70,15 +70,15 @@ def build_email_html(state: ProcurementState) -> str:
                         letter-spacing:0.2em;text-transform:uppercase;margin-bottom:10px;">
                 Selected Supplier</div>
             <div style="font-family:Georgia,serif;font-size:22px;font-weight:700;
-                        color:#ffffff;margin-bottom:4px;">{supplier.get('name','—')}</div>
+                        color:#ffffff;margin-bottom:4px;">{supplier.get('name', '—')}</div>
             <div style="font-family:'Courier New',monospace;font-size:11px;
-                        color:#FF0000;margin-bottom:16px;">{supplier.get('url','')}</div>
+                        color:#FF0000;margin-bottom:16px;">{supplier.get('url', '')}</div>
             <div style="display:flex;gap:32px;flex-wrap:wrap;">
                 <div>
                     <div style="font-family:'Courier New',monospace;font-size:9px;
                                 color:#444;letter-spacing:0.15em;margin-bottom:4px;">PRICE / UNIT</div>
                     <div style="font-family:Georgia,serif;font-size:20px;font-weight:700;
-                                color:#ffffff;">&#8377;{supplier.get('price',0):,.0f}</div>
+                                color:#ffffff;">&#8377;{supplier.get('price', 0):,.0f}</div>
                 </div>
                 <div>
                     <div style="font-family:'Courier New',monospace;font-size:9px;
@@ -93,7 +93,7 @@ def build_email_html(state: ProcurementState) -> str:
                     <div style="font-family:'Courier New',monospace;font-size:9px;
                                 color:#444;letter-spacing:0.15em;margin-bottom:4px;">TOTAL COST</div>
                     <div style="font-family:Georgia,serif;font-size:20px;font-weight:700;
-                                color:#ffffff;">&#8377;{supplier.get('price',0) * quantity:,.0f}</div>
+                                color:#ffffff;">&#8377;{supplier.get('price', 0) * quantity:,.0f}</div>
                 </div>
             </div>
         </div>"""
@@ -119,24 +119,24 @@ def build_email_html(state: ProcurementState) -> str:
                     <div style="font-family:'Courier New',monospace;font-size:9px;
                                 color:#444;letter-spacing:0.12em;margin-bottom:3px;">30 DAYS</div>
                     <div style="font-family:Georgia,serif;font-size:16px;font-weight:700;
-                                color:#ffffff;">&#8377;{forecast.get('forecast_30_days',0):,.0f}</div>
+                                color:#ffffff;">&#8377;{forecast.get('forecast_30_days', 0):,.0f}</div>
                 </div>
                 <div>
                     <div style="font-family:'Courier New',monospace;font-size:9px;
                                 color:#444;letter-spacing:0.12em;margin-bottom:3px;">60 DAYS</div>
                     <div style="font-family:Georgia,serif;font-size:16px;font-weight:700;
-                                color:#ffffff;">&#8377;{forecast.get('forecast_60_days',0):,.0f}</div>
+                                color:#ffffff;">&#8377;{forecast.get('forecast_60_days', 0):,.0f}</div>
                 </div>
                 <div>
                     <div style="font-family:'Courier New',monospace;font-size:9px;
                                 color:#444;letter-spacing:0.12em;margin-bottom:3px;">90 DAYS</div>
                     <div style="font-family:Georgia,serif;font-size:16px;font-weight:700;
-                                color:#ffffff;">&#8377;{forecast.get('forecast_90_days',0):,.0f}</div>
+                                color:#ffffff;">&#8377;{forecast.get('forecast_90_days', 0):,.0f}</div>
                 </div>
             </div>
             <div style="font-family:'Courier New',monospace;font-size:11px;
                         color:#707070;border-top:1px solid #1a1a1a;padding-top:8px;">
-                {forecast.get('recommendation','')}</div>
+                {forecast.get('recommendation', '')}</div>
         </div>"""
 
     neg_html = ""
@@ -246,44 +246,29 @@ def build_email_html(state: ProcurementState) -> str:
 
 
 def send_approval_email(state: ProcurementState) -> bool:
-    api_key = os.getenv("SENDGRID_API_KEY")
-    gmail_address = os.getenv("GMAIL_ADDRESS")
+    api_key = os.getenv("RESEND_API_KEY")
+    to_email = os.getenv("GMAIL_ADDRESS")
 
-    if not api_key or not gmail_address:
+    if not api_key or not to_email:
         print("Email not configured — skipping notification")
         return False
 
     try:
+        resend.api_key = api_key
         item = state.get("item", "Unknown")
         request_id = state.get("request_id", "")
         html_content = build_email_html(state)
 
-        payload = {
-            "personalizations": [{
-                "to": [{"email": gmail_address}],
-                "subject": f"[ProcureIQ] Approval Required — {item} | {request_id[:8].upper()}"
-            }],
-            "from": {"email": gmail_address, "name": "ProcureIQ"},
-            "content": [{"type": "text/html", "value": html_content}]
-        }
+        print(f"Sending email to {to_email}...")
+        response = resend.Emails.send({
+            "from": "ProcureIQ <onboarding@resend.dev>",
+            "to": [to_email],
+            "subject": f"[ProcureIQ] Approval Required — {item} | {request_id[:8].upper()}",
+            "html": html_content
+        })
 
-        print(f"Sending email to {gmail_address}...")
-        response = requests.post(
-            "https://api.sendgrid.com/v3/mail/send",
-            headers={
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json"
-            },
-            json=payload,
-            timeout=15
-        )
-
-        if response.status_code in (200, 202):
-            print(f"Email sent successfully for request {request_id[:8].upper()}")
-            return True
-        else:
-            print(f"Email failed: {response.status_code} {response.text}")
-            return False
+        print(f"Email sent successfully for request {request_id[:8].upper()}: {response}")
+        return True
 
     except Exception as e:
         print(f"Email failed: {e}")
