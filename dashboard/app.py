@@ -14,7 +14,7 @@ import os
 # ── Add project root to path so data/ and intelligence/ are importable ──
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-API_BASE = "http://localhost:8000"
+API_BASE = "https://procureiq-production-8df0.up.railway.app"
 API_KEY = "procureiq-secret-2026"
 HEADERS = {"x-api-key": API_KEY}
 
