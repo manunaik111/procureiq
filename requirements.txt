@@ -22,7 +22,7 @@ crewai==0.114.0
 # ML
 scikit-learn==1.6.1
 pandas==2.2.3
-numpy==2.2.4
+numpy==1.26.4
 
 # Forecasting
 prophet==1.1.5
