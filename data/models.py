@@ -65,6 +65,10 @@ def get_engine():
     # Use SQLite locally, PostgreSQL on Railway
     db_url = os.getenv("DATABASE_URL", "sqlite:///procureiq.db")
     
+    # Railway uses postgres:// but SQLAlchemy needs postgresql://
+    if db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql://", 1)
+    
     # SQLite needs special connect_args
     if db_url.startswith("sqlite"):
         return create_engine(
