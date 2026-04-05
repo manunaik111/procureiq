@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, Header, Depends
 from pydantic import BaseModel, Field, validator
 from orchestrator.graph import graph
 from orchestrator.state import ProcurementState
+from data.models import init_db
 from datetime import datetime, timedelta
 from typing import Optional
 import uuid
@@ -16,6 +17,12 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 app = FastAPI(title="ProcureIQ", version="0.1.0")
+
+
+@app.on_event("startup")
+async def startup_event():
+    init_db()
+    logger.info("Database tables initialized.")
 
 
 # ── Auth ──────────────────────────────────────────────────
