@@ -129,16 +129,17 @@ def build_graph():
     builder = StateGraph(ProcurementState)
 
     builder.add_node("research", research_node)
-    builder.add_node("decision", decision_node)
+    builder.add_node("decide", decision_node)        # ← renamed
     builder.add_node("human_gate", human_gate_node)
     builder.add_node("document", document_node)
 
     builder.set_entry_point("research")
-    builder.add_edge("research", "decision")
-    builder.add_conditional_edges("decision", route_after_decision)
+    builder.add_edge("research", "decide")           # ← renamed
+    builder.add_conditional_edges("decide", route_after_decision)  # ← renamed
     builder.add_edge("human_gate", "document")
     builder.add_edge("document", END)
 
+    checkpointer = MemorySaver()
     return builder.compile(
         checkpointer=checkpointer,
         interrupt_before=["human_gate"]
