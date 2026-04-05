@@ -120,6 +120,7 @@ All of this happens in **20–30 seconds**, end-to-end.
 ## 📸 Screenshots
 
 ### Dashboard
+https://github.com/manunaik111/procureiq/issues/1#issue-4208165873
 The main dashboard shows real-time KPIs, procurement status, and audit trail.
 
 ### Email Notification
