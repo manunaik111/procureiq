@@ -120,13 +120,15 @@ All of this happens in **20–30 seconds**, end-to-end.
 ## 📸 Screenshots
 
 ### Dashboard
-https://github.com/manunaik111/procureiq/issues/1#issue-4208165873
+![Dashboard](https://github.com/manunaik111/procureiq/issues/1#issue-4208165873)
 The main dashboard shows real-time KPIs, procurement status, and audit trail.
 
 ### Email Notification
+![Email](https://github.com/manunaik111/procureiq/issues/2#issue-4208174061)
 Rich HTML email sent to approver with supplier details, risk scores, price forecast and one-click approval.
 
 ### Documents Tab
+![Documents](https://github.com/manunaik111/procureiq/issues/3#issue-4208182098)
 View generated Purchase Orders, RFQ references, and Contract details per request.
 
 ---
