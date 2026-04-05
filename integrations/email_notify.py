@@ -153,7 +153,7 @@ def build_email_html(state: ProcurementState) -> str:
                         color:#707070;line-height:1.8;white-space:pre-wrap;">{negotiation[:600]}...</div>
         </div>"""
 
-    approve_url = f"http://localhost:8000/approve/{request_id}"
+    approve_url = f"https://procureiq-production-8df0.up.railway.app/approve/{request_id}"
 
     html = f"""<!DOCTYPE html>
 <html>
