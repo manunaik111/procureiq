@@ -268,7 +268,9 @@ def send_approval_email(state: ProcurementState) -> bool:
         msg.attach(MIMEText(html_content, "html"))
 
         print(f"Sending email to {gmail_address}...")
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            server.ehlo()
+            server.starttls()
             server.login(gmail_address, gmail_password)
             server.sendmail(gmail_address, gmail_address, msg.as_string())
 
