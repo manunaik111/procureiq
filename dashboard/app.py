@@ -943,7 +943,7 @@ st.markdown(f"""
         <div class="tooltip-text">Backend API server connection status and availability</div>
         <div class="kpi-tag">API Status</div>
         <div class="kpi-value {'online' if online else 'offline'}">{'Online' if online else 'Offline'}</div>
-        <div class="kpi-sub">localhost:8000</div>
+        <div class="kpi-sub">railway.app</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
