@@ -1,3 +1,5 @@
+
+
 # Core orchestration
 langgraph==0.2.74
 langchain==0.3.25
@@ -24,9 +26,6 @@ scikit-learn==1.6.1
 pandas==2.2.3
 numpy==1.26.4
 
-# Forecasting
-prophet==1.1.5
-
 # Document generation
 fpdf2==2.8.2
 openpyxl==3.1.5
@@ -34,7 +33,4 @@ jinja2==3.1.6
 
 # Search
 duckduckgo-search==7.5.3
-pystan==2.19.1.1
-
-
 # Deployment
