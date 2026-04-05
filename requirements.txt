@@ -1,0 +1,39 @@
+# Core orchestration
+langgraph==0.2.74
+langchain==0.3.25
+langchain-community==0.3.23
+langchain-groq==0.3.2
+
+# API
+fastapi==0.115.12
+uvicorn==0.34.0
+
+# Database & cache
+redis==5.2.1
+psycopg2-binary==2.9.10
+sqlalchemy==2.0.40
+
+# Environment
+python-dotenv==1.1.0
+
+# Agents
+crewai==0.114.0
+
+# ML
+scikit-learn==1.6.1
+pandas==2.2.3
+numpy==2.2.4
+
+# Forecasting
+prophet==1.1.6
+
+# Document generation
+fpdf2==2.8.2
+openpyxl==3.1.5
+jinja2==3.1.6
+
+# Search
+duckduckgo-search==7.5.3
+
+# Deployment
+langgraph-checkpoint-redis==2.0.4
