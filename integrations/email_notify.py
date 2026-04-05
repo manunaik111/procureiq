@@ -1,6 +1,4 @@
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import requests
 from orchestrator.state import ProcurementState
 from datetime import datetime
 from dotenv import load_dotenv
@@ -248,34 +246,44 @@ def build_email_html(state: ProcurementState) -> str:
 
 
 def send_approval_email(state: ProcurementState) -> bool:
+    api_key = os.getenv("SENDGRID_API_KEY")
     gmail_address = os.getenv("GMAIL_ADDRESS")
-    gmail_password = os.getenv("GMAIL_APP_PASSWORD")
 
-    if not gmail_address or not gmail_password:
+    if not api_key or not gmail_address:
         print("Email not configured — skipping notification")
         return False
 
     try:
         item = state.get("item", "Unknown")
         request_id = state.get("request_id", "")
-
-        msg = MIMEMultipart("alternative")
-        msg["Subject"] = f"[ProcureIQ] Approval Required — {item} | {request_id[:8].upper()}"
-        msg["From"] = f"ProcureIQ <{gmail_address}>"
-        msg["To"] = gmail_address
-
         html_content = build_email_html(state)
-        msg.attach(MIMEText(html_content, "html"))
+
+        payload = {
+            "personalizations": [{
+                "to": [{"email": gmail_address}],
+                "subject": f"[ProcureIQ] Approval Required — {item} | {request_id[:8].upper()}"
+            }],
+            "from": {"email": gmail_address, "name": "ProcureIQ"},
+            "content": [{"type": "text/html", "value": html_content}]
+        }
 
         print(f"Sending email to {gmail_address}...")
-        with smtplib.SMTP("smtp.gmail.com", 587) as server:
-            server.ehlo()
-            server.starttls()
-            server.login(gmail_address, gmail_password)
-            server.sendmail(gmail_address, gmail_address, msg.as_string())
+        response = requests.post(
+            "https://api.sendgrid.com/v3/mail/send",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            },
+            json=payload,
+            timeout=15
+        )
 
-        print(f"Email sent successfully for request {request_id[:8].upper()}")
-        return True
+        if response.status_code in (200, 202):
+            print(f"Email sent successfully for request {request_id[:8].upper()}")
+            return True
+        else:
+            print(f"Email failed: {response.status_code} {response.text}")
+            return False
 
     except Exception as e:
         print(f"Email failed: {e}")
